@@ -13,7 +13,6 @@ import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import javax.transaction.Transactional;
-import java.security.Principal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -21,14 +20,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImp implements UserService {
-
-    private final UserDao userDao;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserServiceImp(UserDao userDao, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
-        this.userDao = userDao;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -38,7 +34,7 @@ public class UserServiceImp implements UserService {
     @Override
     @Transactional
     public List<User> getAll() {
-        return userDao.getAll();
+        return userRepository.findAll();
     }
 
     @Override
@@ -53,21 +49,25 @@ public class UserServiceImp implements UserService {
     @Override
     @Transactional
     public void updateUser(User user, List<Long> roles) {
+        System.out.println(user);
+        User updatedUser = userRepository.getById(user.getId());
+        updatedUser.setPassword(user.getPassword());
+        updatedUser.setName(user.getName());
         List<Role> roles1 = roleRepository.findAllById(roles);
-        user.setRoles(new HashSet<>(roles1));
-        userDao.updateUser(user);
+        updatedUser.setRoles(new HashSet<>(roles1));
+        userRepository.save(updatedUser);
     }
 
     @Override
     @Transactional
     public void deleteUser(long id) {
-        userDao.deleteUser(id);
+        userRepository.deleteById(id);
     }
 
     @Override
     @Transactional
     public User showUser(long id) {
-        return userDao.showUser(id);
+        return userRepository.getById(id);
     }
 
     @Override

@@ -37,6 +37,13 @@ public class UserController {
         return "show-user";
     }
 
+    @GetMapping("/admin/show")
+    public String showUserFromAdmin(Model model, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        model.addAttribute("user", userService.showUser(user.getId()));
+        return "show-user";
+    }
+
     @GetMapping("/admin")
     public String showAdmin(Model model, Principal principal) {
         model.addAttribute("allUsers", userService.getAll());
