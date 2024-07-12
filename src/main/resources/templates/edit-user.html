@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit user</title>
+</head>
+<body>
+
+<form th:method="POST" th:action="@{/admin/{id}(id=${addUser.getId()})}" th:object="${addUser}">
+
+    <label for="name">FirstName:</label>
+    <input type="text" th:field="*{name}" id="name"/>
+    <br>
+    <td th:each="role : ${allRoles}">
+        <input
+                type="checkbox"
+                name="selectedRoles"
+                th:id="'role' + ${role.getId()}"
+                th:value="${role.getId()}"
+        />
+        <label th:for="'role' + ${role.getId()}" th:text="${role.getAuthority()}">
+        </label>
+    </td>
+    <input type="submit" value="Save"/>
+</form>
+</body>
+</html>
