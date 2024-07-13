@@ -40,26 +40,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().successHandler(successUserHandler)
-                .permitAll()
-                .and()
-                .logout()
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .successHandler(successUserHandler)
+                        .permitAll()
+                ).logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/login");
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-       return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-@Bean
+    @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userService);
         authProvider.setPasswordEncoder(passwordEncoder());
 
         return authProvider;
-}
+    }
 
 }

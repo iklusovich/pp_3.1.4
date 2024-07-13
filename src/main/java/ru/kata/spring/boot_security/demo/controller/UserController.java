@@ -82,4 +82,8 @@ public class UserController {
         userService.deleteUser(id);
         return "redirect:/admin";
     }
+    @GetMapping("/login")
+    String login() {
+        return "loginPage";
+    }
 }

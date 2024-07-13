@@ -32,11 +32,11 @@ public class DataInitializer {
             userServiceImp.add(user, List.of(userRole.getId()));
 
             User admin = new User();
-            user.setFirstName("admin");
-            user.setLastName("admin");
-            user.setAge((byte) 50);
-            user.setEmail("admin@mail.ru");
-            user.setPassword("123");
+            admin.setFirstName("admin");
+            admin.setLastName("admin");
+            admin.setAge((byte) 50);
+            admin.setEmail("admin@mail.ru");
+            admin.setPassword("123");
             userServiceImp.add(admin, List.of(adminRole.getId(), userRole.getId()));
         };
     }
