@@ -54,8 +54,6 @@ public class UserController {
 
     @PostMapping("/admin")
     public String createUser(@ModelAttribute("addUser") User user, @RequestParam(name = "selectedRoles", required = false) Long[] selectedRoles) {
-
-
         if (selectedRoles != null && selectedRoles.length > 0) {
             userService.add(user, Arrays.asList(selectedRoles));
         }
@@ -82,6 +80,7 @@ public class UserController {
         userService.deleteUser(id);
         return "redirect:/admin";
     }
+
     @GetMapping("/login")
     String login() {
         return "loginPage";

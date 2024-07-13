@@ -47,11 +47,11 @@
                     </tr>
                     <tr class="border-top bg-light lh-lg" th:each="user : ${allUsers}">
                         <td class="ps-3" th:utext="${user.getId()}">ID</td>
-                        <td th:utext="${user.getName()}">NAme</td>
-                        <td th:utext="${user.getName()}">LASTNAME</td>
-                        <td th:utext="${user.getName()}">AGE</td>
-                        <td th:utext="${user.getName()}">email</td>
-                        <td th:utext="${user.getName()}">role</td>
+                        <td th:utext="${user.getFirstName()}">NAme</td>
+<!--                        <td th:utext="${user.getName()}">LASTNAME</td>-->
+<!--                        <td th:utext="${user.getName()}">AGE</td>-->
+<!--                        <td th:utext="${user.getName()}">email</td>-->
+<!--                        <td th:utext="${user.getName()}">role</td>-->
                         <td>
                             <a th:href="@{/admin/edit(id=${user.getId()})}">
                                 <button class="bg-info text-white border-0 rounded" type="submit">Edit</button>
@@ -68,9 +68,5 @@
         </div>
     </div>
 </main>
-
-<!--<form th:action="@{/logout}" method="POST">-->
-<!--    <button type="submit">exit</button>-->
-<!--</form>-->
 </body>
 </html>
