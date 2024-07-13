@@ -24,13 +24,19 @@ public class DataInitializer {
             roleRepository.save(adminRole);
 
             User user = new User();
-            user.setName("user");
+            user.setFirstName("user");
+            user.setLastName("user");
+            user.setAge((byte) 100);
+            user.setEmail("user@mail.ru");
             user.setPassword("123");
             userServiceImp.add(user, List.of(userRole.getId()));
 
             User admin = new User();
-            admin.setName("admin");
-            admin.setPassword("123");
+            user.setFirstName("admin");
+            user.setLastName("admin");
+            user.setAge((byte) 50);
+            user.setEmail("admin@mail.ru");
+            user.setPassword("123");
             userServiceImp.add(admin, List.of(adminRole.getId(), userRole.getId()));
         };
     }

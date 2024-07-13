@@ -34,14 +34,14 @@ public class UserController {
     public String showUser(Model model, Principal principal) {
         User user = userService.findByUsername(principal.getName());
         model.addAttribute("user", userService.showUser(user.getId()));
-        return "show-user";
+        return "userPage";
     }
 
     @GetMapping("/admin/show")
     public String showUserFromAdmin(Model model, Principal principal) {
         User user = userService.findByUsername(principal.getName());
         model.addAttribute("user", userService.showUser(user.getId()));
-        return "show-user";
+        return "userPage";
     }
 
     @GetMapping("/admin")
@@ -49,7 +49,7 @@ public class UserController {
         model.addAttribute("allUsers", userService.getAll());
         User user = userService.findByUsername(principal.getName());
         model.addAttribute("currentUserId", user.getId());
-        return "all-users";
+        return "adminPage";
     }
 
     @PostMapping("/admin")
