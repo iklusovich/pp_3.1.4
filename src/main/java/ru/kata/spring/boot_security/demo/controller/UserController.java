@@ -81,8 +81,4 @@ public class UserController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/login")
-    String login() {
-        return "loginPage";
-    }
 }
