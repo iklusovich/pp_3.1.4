@@ -45,10 +45,10 @@ public class UserController {
     }
 
     @GetMapping("/admin")
-    public String showAdmin(Model model, Principal principal) {
+    public String showAdmin(@ModelAttribute("addUser") User user, Model model, Principal principal) {
         model.addAttribute("allUsers", userService.getAll());
-        User user = userService.findByUsername(principal.getName());
-        model.addAttribute("currentUser", user);
+        User currentUser = userService.findByUsername(principal.getName());
+        model.addAttribute("currentUser", currentUser);
         return "adminPage";
     }
 
