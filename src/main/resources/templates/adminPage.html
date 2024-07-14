@@ -30,12 +30,14 @@
         </h1>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="adminPanel-tab" data-bs-toggle="tab" data-bs-target="#adminPanel" type="button"
+                <button class="nav-link active" id="adminPanel-tab" data-bs-toggle="tab" data-bs-target="#adminPanel"
+                        type="button"
                         role="tab" aria-controls="adminPanel" aria-selected="true">Users table
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="newUserForm-tab" data-bs-toggle="tab" data-bs-target="#newUserForm" type="button"
+                <button class="nav-link" id="newUserForm-tab" data-bs-toggle="tab" data-bs-target="#newUserForm"
+                        type="button"
                         role="tab" aria-controls="newUserForm" aria-selected="false">New User
                 </button>
             </li>
@@ -66,8 +68,13 @@
                                 <td><span th:each="role : ${user.getRoles()}" th:utext="${role.getName()} + ' '"></span>
                                 </td>
                                 <td>
-                                    <a th:href="@{/admin/edit(id=${user.getId()})}">
-                                        <button class="bg-info text-white border-0 rounded" type="submit">Edit</button>
+<!--                                    <a th:href="@{/admin/edit(id=${user.getId()})}">-->
+<!--                                        <button class="bg-info text-white border-0 rounded" type="submit"-->
+<!--                                                data-bs-toggle="modal" data-bs-target="#exampleModal">Edit</button>-->
+<!--                                    </a>-->
+                                    <a>
+                                        <button class="bg-info text-white border-0 rounded" type="submit"
+                                                data-bs-toggle="modal" data-bs-target="#exampleModal">Edit</button>
                                     </a>
                                 </td>
                                 <td>
@@ -127,6 +134,52 @@
 
 
 </main>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit user</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="pt-4 bg-white p-3 d-flex justify-content-center">
+                        <form th:method="POST" th:action="@{/admin}" th:object="${currentUser}" class="col-6 d-flex flex-column justify-content-center align-content-center" >
+                            <label for="idEdit" class="fw-bold align-self-center">ID</label>
+                            <input type="text" id="idEdit" th:field="*{id}" class="rounded p-1 border-1  mb-2 p-1" disabled>
+                            <label for="firstNameEdit" class="fw-bold align-self-center">First name</label>
+                            <input type="text" id="firstNameEdit" th:field="*{firstName}" class="rounded p-1 border-1  mb-2 p-1">
+                            <label for="lastNameEdit" class="fw-bold align-self-center">Last name</label>
+                            <input type="text" id="lastNameEdit" th:field="*{lastName}" class="rounded p-1 border-1  mb-2 p-1">
+                            <label for="ageEdit" class="fw-bold align-self-center">Age</label>
+                            <input type="number" id="ageEdit" th:field="*{age}" class="rounded p-1 border-1  mb-2 p-1">
+                            <label for="emailEdit" class="fw-bold align-self-center">Email</label>
+                            <input type="email" id="emailEdit" th:field="*{email}" class="rounded p-1 border-1  mb-2 p-1">
+                            <label for="passwordEdit" class="fw-bold align-self-center">Password</label>
+                            <input type="password" id="passwordEdit" th:field="*{password}" class="rounded p-1 border-1  mb-2 p-1">
+                            <label for="rolesEdit" class="fw-bold align-self-center">Role</label>
+                            <select name="roles" id="rolesEdit" multiple class="mb-2 ps-2" size="2">
+                                <option>Admin</option>
+                                <option>User</option>
+                            </select>
+                            <!--                    <td th:each="role : ${allRoles}">-->
+                            <!--                        <input type="checkbox" name="selectedRoles" th:id="'role' + ${role.getId()}" th:value="${role.getId()}"/>-->
+                            <!--                        <label th:for="'role' + ${role.getId()}" th:text="${role.getAuthority()}">-->
+                            <!--                        </label>-->
+                            <!--                    </td>-->
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
