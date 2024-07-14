@@ -48,7 +48,7 @@ public class UserController {
     public String showAdmin(Model model, Principal principal) {
         model.addAttribute("allUsers", userService.getAll());
         User user = userService.findByUsername(principal.getName());
-        model.addAttribute("currentUserId", user.getId());
+        model.addAttribute("currentUser", user);
         return "adminPage";
     }
 

@@ -27,14 +27,14 @@ public class User implements UserDetails {
     @Column(name = "age")
     private byte age;
 
-    @Column(name = "email")
+    @Column(name = "username")
     private String username;
 
     @Column(name = "password")
     private String password;
 
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -105,7 +105,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return getEmail();
+        return username;
     }
 
     @Override

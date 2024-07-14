@@ -7,7 +7,7 @@
 </head>
 <body>
 <header class="d-flex h-50 justify-content-between p-3  bg-dark">
-    <div class="text-white">email with roles</div>
+    <div class="text-white" th:text = "${currentUser.getEmail()} + ' with roles: '">email with roles</div>
     <div>
         <form th:action="@{/logout}" method="POST">
             <button type="submit" class="text-light bg-dark border-0">Logout</button>
@@ -16,7 +16,10 @@
 </header>
 <main class ="d-flex h-100  vh-100 justify-content-between bg-light">
     <div class="col-2  pt-3 bg-white">
-        <p class="bg-primary w-100 d-block ps-3 pt-2 pb-2 text-white">Name</p>
+        <p th:each = "user : ${allUsers}" class="mb-0">
+            <span th:if="${currentUser.getId() == user.getId()}" class="bg-primary w-100 ps-3 pt-2 pb-2 text-white  d-block"  th:text="${user.getFirstName()}"></span>
+            <span th:if="${currentUser.getId() != user.getId()}" class="bg-white w-100 ps-3 pt-2 pb-2 text-primary  d-block"  th:text="${user.getFirstName()}"></span>
+        </p>
     </div>
     <div class="col-9 bg-light me-5 h-100 pt-3">
         <h1>
@@ -24,10 +27,10 @@
         </h1>
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="adminPage.html">Users table</a>
+                <a class="nav-link active"  href="/adminPage">Users table</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="loginFormPage.html">New User</a>
+                <a class="nav-link"  href="loginFormPage.html">New User</a>
             </li>
         </ul>
         <div class="border border-1 rounded pt-2 ">
@@ -45,13 +48,13 @@
                         <th>Edit</th>
                         <th>Delete</th>
                     </tr>
-                    <tr class="border-top bg-light lh-lg" th:each="user : ${allUsers}">
-                        <td class="ps-3" th:utext="${user.getId()}">ID</td>
+                    <tr th:each="user, i : ${allUsers}" th:class="${i.odd} ? 'bg-light border-top lh-lg' : 'bg-white border-top lh-lg'">
+                        <td class="ps-3 lh-lg pb-2 pt-2" th:utext="${user.getId()}">ID</td>
                         <td th:utext="${user.getFirstName()}">NAme</td>
-<!--                        <td th:utext="${user.getName()}">LASTNAME</td>-->
-<!--                        <td th:utext="${user.getName()}">AGE</td>-->
-<!--                        <td th:utext="${user.getName()}">email</td>-->
-<!--                        <td th:utext="${user.getName()}">role</td>-->
+                        <td th:utext="${user.getLastName()}">LASTNAME</td>
+                        <td th:utext="${user.getAge()}">AGE</td>
+                        <td th:utext="${user.getEmail()}">email</td>
+                        <td ><span th:each="role : ${user.getRoles()}" th:utext="${role.getName()} + ' '"></span></td>
                         <td>
                             <a th:href="@{/admin/edit(id=${user.getId()})}">
                                 <button class="bg-info text-white border-0 rounded" type="submit">Edit</button>
@@ -59,7 +62,7 @@
                         </td>
                         <td>
                             <a th:href="@{/admin/delete(id=${user.getId()})}">
-                                <button class="bg-danger text-white border-0 rounded" th:if="${currentUserId != user.getId()}" type="submit">Delete</button>
+                                <button class="bg-danger text-white border-0 rounded" th:if="${currentUser.getId() != user.getId()}" type="submit">Delete</button>
                             </a>
                         </td>
                     </tr>
