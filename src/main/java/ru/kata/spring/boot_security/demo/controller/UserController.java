@@ -44,6 +44,9 @@ public class UserController {
         return "userPage";
     }
 
+    Long getId(Long userId) {
+        return userId;
+    }
     @GetMapping("/admin")
     public String showAdmin(@ModelAttribute("addUser") User user, Model model, Principal principal) {
         model.addAttribute("allUsers", userService.getAll());
@@ -76,7 +79,7 @@ public class UserController {
     }
 
     @GetMapping("/admin/delete")
-    public String deletedUser( @RequestParam(value = "id") long id) {
+    public String deletedUser(@RequestParam(value = "id") long id) {
         userService.deleteUser(id);
         return "redirect:/admin";
     }
