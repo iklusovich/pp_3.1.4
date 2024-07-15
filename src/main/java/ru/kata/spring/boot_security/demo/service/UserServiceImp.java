@@ -49,7 +49,7 @@ public class UserServiceImp implements UserService {
     @Transactional
     public void updateUser(User user, List<Long> roles) {
         User updatedUser = userRepository.getById(user.getId());
-        updatedUser.setPassword(user.getPassword());
+        updatedUser.setPassword(passwordEncoder.encode(user.getPassword()));
         updatedUser.setName(user.getFirstName());
         updatedUser.setLastName(user.getLastName());
         updatedUser.setEmail(user.getEmail());
