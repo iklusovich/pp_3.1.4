@@ -33,31 +33,36 @@ public class UserController {
     @GetMapping("/user")
     public String showUser(Model model, Principal principal) {
         User user = userService.findByUsername(principal.getName());
-        model.addAttribute("user", userService.showUser(user.getId()));
+        model.addAttribute("showUser", userService.showUser(user.getId()));
         return "userPage";
     }
 
-    @GetMapping("/admin/show")
-    public String showUserFromAdmin(Model model, Principal principal) {
-        User user = userService.findByUsername(principal.getName());
-        model.addAttribute("user", userService.showUser(user.getId()));
-        return "userPage";
-    }
-
-    Long getId(Long userId) {
-        return userId;
-    }
     @GetMapping("/admin")
-    public String showAdmin(@ModelAttribute("addUser") User user, Model model, Principal principal) {
-        System.out.println("========");
-        System.out.println(user);
-        System.out.println("========");
-        model.addAttribute("allUsers", userService.getAll());
+    public String showUserFromAdmin(@ModelAttribute("addUser") User user, Model model, Principal principal, @RequestParam(value = "id", required = false) Long id) {
         model.addAttribute("allRoles", roleService.findAll());
         User currentUser = userService.findByUsername(principal.getName());
         model.addAttribute("currentUser", currentUser);
-        return "adminPage";
+
+        model.addAttribute("allUsers", userService.getAll());
+        if (id != null) {
+            model.addAttribute("showUser", userService.showUser(id));
+            return "userPage";
+        } else {
+            model.addAttribute("user", userService.showUser(currentUser.getId()));
+            return "adminPage";
+        }
+
     }
+
+
+//    @GetMapping("/admin")
+//    public String showAdmin(@ModelAttribute("addUser") User user, Model model, Principal principal) {
+//        model.addAttribute("allUsers", userService.getAll());
+//        model.addAttribute("allRoles", roleService.findAll());
+//        User currentUser = userService.findByUsername(principal.getName());
+//        model.addAttribute("currentUser", currentUser);
+//        return "adminPage";
+//    }
 
     @PostMapping("/admin")
     public String createUser(@ModelAttribute("addUser") User user, @RequestParam(name = "roles", required = false) Long[] selectedRoles) {

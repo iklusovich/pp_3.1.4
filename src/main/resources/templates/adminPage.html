@@ -23,18 +23,18 @@
 </header>
 <main class="d-flex h-100  vh-100 justify-content-between bg-light">
     <div class="col-2  pt-3 bg-white">
-        <p th:each="user : ${allUsers}" class="mb-0">
-            <span th:if="${currentUser.getId() == user.getId()}"
-                  class="bg-primary w-100 ps-3 pt-2 pb-2 text-white  d-block" th:text="${user.getFirstName()}"></span>
-            <span th:if="${currentUser.getId() != user.getId()}"
-                  class="bg-white w-100 ps-3 pt-2 pb-2 text-primary  d-block" th:text="${user.getFirstName()}"></span>
-        </p>
+        <ul class="nav nav-pills d-flex w-100 flex-column">
+            <li class="nav-item mb-0" th:each="user : ${allUsers}">
+                <a th:if="${currentUser.getId() == user.getId()}" class="nav-link active" th:text="${user.getFirstName()}" aria-current="page" th:href="@{/admin(id=${user.getId()})}"/>
+                <a th:if="${currentUser.getId() != user.getId()}" class="nav-link" th:text="${user.getFirstName()}" aria-current="page" th:href="@{/admin(id=${user.getId()})}"/>
+            </li>
+        </ul>
     </div>
     <div class="col-9 bg-light me-5 h-100 pt-3">
         <h1>
             Admin panel
         </h1>
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <ul class="nav nav-tabs" id="myTab" th:href="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="adminPanel-tab" data-bs-toggle="tab" data-bs-target="#adminPanel"
                         type="button"

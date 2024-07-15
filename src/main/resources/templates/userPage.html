@@ -7,10 +7,10 @@
 </head>
 <body>
 <header class="d-flex h-50 justify-content-between p-3  bg-dark">
-    <div><span class="text-white" th:text="${user.getEmail()} + ' with roles: ' ">
+    <div><span class="text-white" th:text="${showUser.getEmail()} + ' with roles: ' ">
 
     </span>
-        <span class="text-white" th:each="role : ${user.getRoles()}"
+        <span class="text-white" th:each="role : ${showUser.getRoles()}"
               th:text="${role.getName().replace('ROLE_', '') + ' '}">
                 </span>
     </div>
@@ -22,7 +22,16 @@
 </header>
 <main class ="d-flex h-100  vh-100 justify-content-between bg-light">
     <div class="col-2  pt-3 bg-white">
-        <p class="bg-primary w-100 d-block ps-3 pt-2 pb-2 text-white">Name</p>
+        <ul class="nav nav-pills d-flex w-100 flex-column">
+            <li class="nav-item mb-0" th:each="user : ${allUsers}">
+                <a th:if="${user.getId() == showUser.getId()}" class="nav-link active" th:text="${user.getFirstName()}" aria-current="page" th:href="@{/admin(id=${user.getId()})}"/>
+
+                <a th:if="${user.getId() != showUser.getId()}" class="nav-link" th:text="${user.getFirstName()}" aria-current="page" th:href="@{/admin(id=${user.getId()})}"/>
+            </li>
+            <li>
+                <a th:if="${allUsers == null}" class="nav-link active" th:text="${showUser.getFirstName()}"/>
+            </li>
+        </ul>
     </div>
     <div class="col-9 bg-light me-5 h-100 pt-3">
     <h1>
@@ -42,12 +51,12 @@
                 <th>Role</th>
             </tr>
             <tr class="border-top bg-light lh-lg">
-                <td class="ps-3" th:utext="${user.getId()}">ID</td>
-                <td th:utext="${user.getFirstName()}">NAme</td>
-                <td th:utext="${user.getLastName()}">LASTNAME</td>
-                <td th:utext="${user.getAge()}">AGE</td>
-                <td th:utext="${user.getEmail()}">email</td>
-                <td><span th:each="role : ${user.getRoles()}" th:utext="${role.getName().replace('ROLE_','')} + ' '"></span>
+                <td class="ps-3" th:utext="${showUser.getId()}">ID</td>
+                <td th:utext="${showUser.getFirstName()}">NAme</td>
+                <td th:utext="${showUser.getLastName()}">LASTNAME</td>
+                <td th:utext="${showUser.getAge()}">AGE</td>
+                <td th:utext="${showUser.getEmail()}">email</td>
+                <td><span th:each="role : ${showUser.getRoles()}" th:utext="${role.getName().replace('ROLE_','')} + ' '"></span>
             </tr>
         </table>
         </div>
