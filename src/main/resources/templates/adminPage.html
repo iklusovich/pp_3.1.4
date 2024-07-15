@@ -92,7 +92,7 @@
                                     <a>
                                         <button class="bg-danger text-white border-0 rounded"
                                                 th:if="${currentUser.getId() != user.getId()}" type="submit"
-                                                data-bs-toggle="modal" data-bs-target="#deleteModal">Delete
+                                                data-bs-toggle="modal" th:data-bs-target="'#deleteModal' + ${user.getId()}">Delete
                                         </button>
                                     </a>
                                 </td>
@@ -173,7 +173,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="modal fade" id="deleteModal" tabindex="-1"
+                                <div class="modal fade" th:id="'deleteModal' + ${user.getId()}" tabindex="-1"
                                      aria-labelledby="deleteModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -253,17 +253,29 @@
                         <form th:method="POST" th:action="@{/admin}" th:object="${addUser}"
                               class="d-flex flex-column  col-3">
                             <label for="firstName" class="fw-bold align-self-center">First name</label>
-                            <input type="text" id="firstName" th:field="*{firstName}"
+                            <input type="text"
+                                   id="firstName"
+                                   th:field="*{firstName}"
+                                   th:name="firstName"
                                    class="rounded p-1 border-1  mb-2 p-1">
                             <label for="lastName" class="fw-bold align-self-center">Last name</label>
-                            <input type="text" id="lastName" th:field="*{lastName}"
+                            <input type="text"
+                                   id="lastName"
+                                   th:field="*{lastName}"
+                                   th:name="lastName"
                                    class="rounded p-1 border-1  mb-2 p-1">
                             <label for="age" class="fw-bold align-self-center">Age</label>
-                            <input type="number" id="age" th:field="*{age}" class="rounded p-1 border-1  mb-2 p-1">
+                            <input
+                                    type="number"
+                                    id="age"
+                                    th:field="*{age}"
+                                    th:name="age"
+                                    class="rounded p-1 border-1  mb-2 p-1">
                             <label for="email" class="fw-bold align-self-center">Email</label>
                             <input type="email" id="email" th:field="*{email}" class="rounded p-1 border-1  mb-2 p-1">
-                            <label for="password" class="fw-bold align-self-center">Password</label>
-                            <input type="password" id="password" th:field="*{password}"
+                            <label for="password"
+                                   class="fw-bold align-self-center">Password</label>
+                            <input type="password" id="password" th:field="*{password}" th:name="password"
                                    class="rounded p-1 border-1  mb-2 p-1">
                             <label for="roles" class="fw-bold align-self-center">Role</label>
                             <select name="roles" id="roles" multiple class="mb-2 ps-2" size="2">

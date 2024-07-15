@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @PostMapping("/admin")
-    public String createUser(@ModelAttribute("addUser") User user, @RequestParam(name = "selectedRoles", required = false) Long[] selectedRoles) {
+    public String createUser(@ModelAttribute("addUser") User user, @RequestParam(name = "roles", required = false) Long[] selectedRoles) {
         if (selectedRoles != null && selectedRoles.length > 0) {
             userService.add(user, Arrays.asList(selectedRoles));
         }
