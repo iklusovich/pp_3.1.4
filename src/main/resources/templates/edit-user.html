@@ -11,6 +11,9 @@
     <label for="name">FirstName:</label>
     <input type="text" th:field="*{name}" id="name"/>
     <br>
+    <label for="password">Password:</label>
+    <input type="password" th:field="*{password}" id="password"/>
+    <br>
     <td th:each="role : ${allRoles}">
         <input
                 type="checkbox"

@@ -50,7 +50,7 @@ public class UserServiceImp implements UserService {
     public void updateUser(User user, List<Long> roles) {
         System.out.println(user);
         User updatedUser = userRepository.getById(user.getId());
-        updatedUser.setPassword(user.getPassword());
+        updatedUser.setPassword(passwordEncoder.encode(user.getPassword()));
         updatedUser.setName(user.getName());
         List<Role> roles1 = roleRepository.findAllById(roles);
         updatedUser.setRoles(new HashSet<>(roles1));
