@@ -49,10 +49,12 @@ public class UserController {
     }
     @GetMapping("/admin")
     public String showAdmin(@ModelAttribute("addUser") User user, Model model, Principal principal) {
+        System.out.println("========");
+        System.out.println(user);
+        System.out.println("========");
         model.addAttribute("allUsers", userService.getAll());
         model.addAttribute("allRoles", roleService.findAll());
         User currentUser = userService.findByUsername(principal.getName());
-        System.out.println(currentUser);
         model.addAttribute("currentUser", currentUser);
         return "adminPage";
     }
@@ -72,8 +74,11 @@ public class UserController {
         return "edit-user";
     }
 
-    @PostMapping("/admin/{id}")
-    public String updateUser(@ModelAttribute("addUser") User user,  @RequestParam(name = "selectedRoles", required = false) Long[] selectedRoles) {
+    @PatchMapping("/admin/{id}")
+    public String updateUser(@ModelAttribute("user") User user,  @RequestParam(name = "roles", required = false) Long[] selectedRoles) {
+        System.out.println("go");
+        System.out.println(user);
+        System.out.println(selectedRoles);
         if (selectedRoles != null && selectedRoles.length > 0) {
             userService.updateUser(user, Arrays.asList(selectedRoles));
         }
