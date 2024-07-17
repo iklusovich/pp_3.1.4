@@ -1,7 +1,5 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,8 +7,6 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
-import javax.naming.Binding;
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Arrays;
 
