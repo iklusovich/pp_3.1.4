@@ -49,10 +49,13 @@ public class UserServiceImp implements UserService {
     @Transactional
     public void updateUser(User user, List<Long> roles) {
         User updatedUser = userRepository.getById(user.getId());
-        if (!passwordEncoder.encode(user.getPassword()).equals(updatedUser.getPassword())) {
+        if (!passwordEncoder.encode(user.getPassword()).equals(updatedUser.getPassword()) && !"".equals(user.getPassword())) {
             updatedUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        } else {
+            updatedUser.setPassword(updatedUser.getPassword());
         }
         updatedUser.setName(user.getName());
+
         List<Role> roles1 = roleRepository.findAllById(roles);
         updatedUser.setRoles(new HashSet<>(roles1));
         userRepository.save(updatedUser);
