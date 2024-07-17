@@ -48,9 +48,10 @@ public class UserServiceImp implements UserService {
     @Override
     @Transactional
     public void updateUser(User user, List<Long> roles) {
-        System.out.println(user);
         User updatedUser = userRepository.getById(user.getId());
-        updatedUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (!passwordEncoder.encode(user.getPassword()).equals(updatedUser.getPassword())) {
+            updatedUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         updatedUser.setName(user.getName());
         List<Role> roles1 = roleRepository.findAllById(roles);
         updatedUser.setRoles(new HashSet<>(roles1));

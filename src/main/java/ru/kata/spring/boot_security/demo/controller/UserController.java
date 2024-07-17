@@ -1,6 +1,5 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -54,8 +53,6 @@ public class UserController {
 
     @PostMapping("/admin")
     public String createUser(@ModelAttribute("addUser") User user, @RequestParam(name = "selectedRoles", required = false) Long[] selectedRoles) {
-
-
         if (selectedRoles != null && selectedRoles.length > 0) {
             userService.add(user, Arrays.asList(selectedRoles));
         }
