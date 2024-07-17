@@ -51,8 +51,6 @@ public class UserServiceImp implements UserService {
         User updatedUser = userRepository.getById(user.getId());
         if (!passwordEncoder.encode(user.getPassword()).equals(updatedUser.getPassword()) && !"".equals(user.getPassword())) {
             updatedUser.setPassword(passwordEncoder.encode(user.getPassword()));
-        } else {
-            updatedUser.setPassword(updatedUser.getPassword());
         }
         updatedUser.setName(user.getName());
 
