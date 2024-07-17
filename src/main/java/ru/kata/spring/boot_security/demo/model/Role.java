@@ -1,8 +1,6 @@
 package ru.kata.spring.boot_security.demo.model;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Component;
-
 import javax.persistence.*;
 
 import java.util.List;
