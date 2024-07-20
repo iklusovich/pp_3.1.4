@@ -1,17 +1,26 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
+import ru.kata.spring.boot_security.demo.util.GetUsersResponse;
+import ru.kata.spring.boot_security.demo.util.PersonErrorResponse;
+import ru.kata.spring.boot_security.demo.util.PersonNotCreatedException;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.List;
 
 
-@Controller
+@RestController
 public class UserController {
 
     private final UserService userService;
@@ -29,44 +38,64 @@ public class UserController {
         return "userPage";
     }
 
-    @GetMapping("/admin")
-    public String showUserFromAdmin(@ModelAttribute("addUser") User user, Model model, Principal principal, @RequestParam(value = "id", required = false) Long id) {
-        model.addAttribute("allRoles", roleService.findAll());
+    @GetMapping("/admin/api")
+    public ResponseEntity<GetUsersResponse> getUsers(Principal principal, @RequestParam(value = "id", required = false) Long id) {
+        GetUsersResponse response = new GetUsersResponse();
         User currentUser = userService.findByUsername(principal.getName());
-        model.addAttribute("currentUser", currentUser);
+        response.setAllUsers(userService.getAll());
+        response.setCurrentUser(currentUser);
+        response.setAllRoles(roleService.findAll());
 
-        model.addAttribute("allUsers", userService.getAll());
         if (id != null) {
-            model.addAttribute("showUser", userService.showUser(id));
-            return "userPage";
+            response.setShowUser(userService.showUser(id));
         } else {
-            model.addAttribute("user", userService.showUser(currentUser.getId()));
-            return "adminPage";
+            response.setUser(userService.showUser(currentUser.getId()));
         }
-
+        return new ResponseEntity<>(response,  HttpStatus.OK);
     }
 
+
+
     @PostMapping("/admin")
-    public String createUser(@ModelAttribute("addUser") User user, @RequestParam(name = "roles", required = false) Long[] selectedRoles) {
+    public ResponseEntity<HttpStatus> createUser(@RequestBody @Valid User user, BindingResult bindingResult, @RequestParam(name = "roles", required = false) Long[] selectedRoles) {
+        if(bindingResult.hasErrors()) {
+            StringBuilder sb = new StringBuilder();
+          List<FieldError> listError = bindingResult.getFieldErrors();
+          for (FieldError error : listError) {
+              sb.append(error.getField()).append(" : ").append(error.getDefaultMessage()).append("\n");
+          }
+            throw new PersonNotCreatedException(sb.toString());
+        }
+
         if (selectedRoles != null && selectedRoles.length > 0) {
             userService.add(user, Arrays.asList(selectedRoles));
         }
-        return "redirect:/admin";
+        return new  ResponseEntity<>(HttpStatus.CREATED);
     }
 
 
     @PatchMapping("/admin/{id}")
-    public String updateUser(@ModelAttribute("user") User user, @RequestParam(name = "roles", required = false) Long[] selectedRoles) {
+    public ResponseEntity<HttpStatus> updateUser(@RequestBody @Valid User user, BindingResult bindingResult, @RequestParam(name = "roles", required = false) Long[] selectedRoles) {
+        if(bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         if (selectedRoles != null && selectedRoles.length > 0) {
             userService.updateUser(user, Arrays.asList(selectedRoles));
         }
-        return "redirect:/admin";
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/admin/delete")
-    public String deletedUser(@RequestParam(value = "id") long id) {
+    @DeleteMapping("/admin")
+    public ResponseEntity<HttpStatus> deletedUser(@RequestParam(value = "id") long id) {
         userService.deleteUser(id);
-        return "redirect:/admin";
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+
+@ExceptionHandler
+    public ResponseEntity<PersonErrorResponse> handleException(PersonNotCreatedException e) {
+    PersonErrorResponse personErrorResponse = new PersonErrorResponse(e.getMessage());
+    return new ResponseEntity<>(personErrorResponse, HttpStatus.BAD_REQUEST);
+}
 }

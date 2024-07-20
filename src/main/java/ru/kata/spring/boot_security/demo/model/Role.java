@@ -30,13 +30,6 @@ public class Role implements GrantedAuthority {
         return name;
     }
 
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
 
     public Long getId() {
         return id;
