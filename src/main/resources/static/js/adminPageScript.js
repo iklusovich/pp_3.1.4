@@ -1,19 +1,25 @@
-const adminUrl = '/admin/api';
+const adminUsersUrl = '/admin/api/users';
+const adminRolesUrl = '/admin/api/roles';
 
-const getAdminPage = async () => {
-    const data = await fetch(adminUrl);
-    return await data.json();
+const getUsersData = async () => {
+    const response = await fetch(adminUsersUrl);
+    const {currentUser, allUsers, user, showUser} = await response.json();
+    await getCurrentUserInfo(currentUser);
+    await createTableUsersData(allUsers);
+    await getAllUsersInfo(allUsers, currentUser);
 }
 
-const getCurrentUserInfo = async () => {
-    const {currentUser} = await getAdminPage();
+const getRolesData = async () => {
+    const response = await fetch(adminRolesUrl);
+    return await response.json();
+}
+
+const getCurrentUserInfo =  (currentUser) => {
     document.getElementById("currentUserEmail").innerText = currentUser.email + " " + document.getElementById("currentUserEmail").innerText;
     document.getElementById("currentUserRoles").innerText = currentUser.roles.map(role => role.name.replace("ROLE_", "")).join(" ");
 }
 
-const getAllUsersInfo = async () => {
-    const {allUsers, currentUser} = await getAdminPage();
-
+const getAllUsersInfo = async (allUsers, currentUser) => {
     allUsers.forEach(user => {
         document.getElementById("allUsersNavItem").innerHTML += currentUser.id === user.id ? `
             <li class="nav-item mb-0" >
@@ -23,18 +29,12 @@ const getAllUsersInfo = async () => {
     })
 }
 
-
-const getAllRoles = async () => {
-    const {allRoles} = await getAdminPage();
-
-    return allRoles;
-}
-const allRolesListHelper = async (parentId = "", user = null) => {
-    const allRoles = await getAllRoles();
+const allRolesListHelper =  async (parentId = "", user = null, deleteMode = false) => {
+    let allRoles = await getRolesData();
     const prepareRoles = allRoles.map(role => {
         let isSelected = false;
         if (user) {
-            isSelected = user.roles.map(elem => elem.name).includes(role.name);
+            isSelected = user.roles.map(elem => elem.name).includes(role.name) && !deleteMode;
         }
         return isSelected ? `<option selected><span>${role.name.replace("ROLE_", "")} </span></option>`
                 : `<option><span>${role.name.replace("ROLE_", "")} </span></option>`
@@ -44,8 +44,7 @@ const allRolesListHelper = async (parentId = "", user = null) => {
 }
 
 
-const createTableUsersData = async () => {
-    const {allUsers, currentUser, allRoles} = await getAdminPage();
+const createTableUsersData = async (allUsers) => {
     const tableUsersData = document.getElementById("tableUsersData");
 
 
@@ -86,8 +85,8 @@ const createTableUsersData = async () => {
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Закрыть"></button>
                                             </div>
-                                            <form method="PATCH"
-                                                  action="/admin/{id}(id=${user.id})"
+                                            <form method="GET"
+                                                  action="/admin/id=${user.id}"
                                                   class="col-6 d-flex flex-column justify-content-center align-content-center">
                                                 <div class="modal-body">
                                                     <div>
@@ -162,8 +161,8 @@ const createTableUsersData = async () => {
                                                         aria-label="Закрыть"></button>
                                             </div>
                                             <div class="modal-body">
-                                                <form method="POST"
-                                                      action="/admin/{id}(id=${user.id})"
+                                                <form method="GET"
+                                                      action="/admin/delete?id=${user.id}"
                                                       class="col-6 d-flex flex-column justify-content-center align-content-center">
                                                     <div>
                                                         <div class="pt-4 bg-white p-3 d-flex justify-content-center flex-column">
@@ -200,7 +199,7 @@ const createTableUsersData = async () => {
                                                             <select name="roles" id=${'roleDelete' + user.id}
                                                                     multiple
                                                                     class="mb-2 ps-2" size="2" disabled>
-                                                                ${allRolesListHelper( 'roleDelete' + user.id, user)}
+                                                                ${allRolesListHelper( 'roleDelete' + user.id, user, true)}
                                                             </select>
 
                                                         </div>
@@ -210,10 +209,9 @@ const createTableUsersData = async () => {
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                                     Close
-                                                </button>
-                                                <a href="@{/admin/delete(id=${user.id})}">
-                                                    <button type="button" class="btn btn-danger">Delete</button>
-                                                </a>
+                                                </button> 
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                            
                                             </div>
                                         </div>
                                     </div>
@@ -222,7 +220,7 @@ const createTableUsersData = async () => {
     })
 }
 
-const createUserFromHelper = () => {
+const createUserFormHelper = () => {
     const form = document.getElementById("userCreateForm");
 
     form.innerHTML = `
@@ -259,8 +257,4 @@ const createUserFromHelper = () => {
                                 new user
                             </button>`
 }
-
-getAdminPage();
-getCurrentUserInfo();
-createTableUsersData();
-getAllUsersInfo();
+getUsersData();
