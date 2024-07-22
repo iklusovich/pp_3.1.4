@@ -2,7 +2,6 @@ package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -46,18 +45,20 @@ public class UserController {
         response.setAllUsers(userService.getAll());
         response.setCurrentUser(currentUser);
         response.setAllRoles(roleService.findAll());
-
-        if (id != null) {
-            response.setShowUser(userService.showUser(id));
-        } else {
-            response.setUser(userService.showUser(currentUser.getId()));
-        }
+        response.setUser(userService.showUser(currentUser.getId()));
         return new ResponseEntity<>(response,  HttpStatus.OK);
     }
 
     @GetMapping("/admin/api/roles")
     public ResponseEntity<List<Role>> getRoles() {
         return new ResponseEntity<>(roleService.findAll(),  HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/api/user/{id}")
+    public ResponseEntity<User> getUser(@PathVariable long id) {
+
+        User user = userService.showUser(id);
+        return new ResponseEntity<>(user,  HttpStatus.OK);
     }
 
 
