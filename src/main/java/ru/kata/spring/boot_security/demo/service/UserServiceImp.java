@@ -38,10 +38,9 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Transactional
-    public void add(User user, List<Long> roles) {
+    public void add(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        List<Role> roles1 = roleRepository.findAllById(roles);
-        user.setRoles(new HashSet<>(roles1));
+
         userRepository.save(user);
     }
 
@@ -57,7 +56,7 @@ public class UserServiceImp implements UserService {
         updatedUser.setEmail(user.getEmail());
         updatedUser.setAge(user.getAge());
         List<Role> roles1 = roleRepository.findAllById(roles);
-        updatedUser.setRoles(new HashSet<>(roles1));
+        updatedUser.setRoles(roles1);
         userRepository.save(updatedUser);
     }
 

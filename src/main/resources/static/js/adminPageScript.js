@@ -3,7 +3,7 @@ const adminRolesUrl = '/admin/api/roles';
 
 const getUsersData = async () => {
     const response = await fetch(adminUsersUrl);
-    const {currentUser, allUsers, user} = await response.json();
+    const {currentUser, allUsers} = await response.json();
     await getCurrentUserInfo(currentUser);
     await createTableUsersData(allUsers);
     await getAllUsersInfo(allUsers, currentUser);
@@ -36,8 +36,8 @@ const allRolesListHelper = async (parentId = "", user = null, deleteMode = false
         if (user) {
             isSelected = user.roles.map(elem => elem.name).includes(role.name) && !deleteMode;
         }
-        return isSelected ? `<option selected><span>${role.name.replace("ROLE_", "")} </span></option>`
-            : `<option><span>${role.name.replace("ROLE_", "")} </span></option>`
+        return isSelected ? `<option selected value=${role.id}><span>${role.name.replace("ROLE_", "")} </span></option>`
+            : `<option value=${role.id}><span>${role.name.replace("ROLE_", "")} </span></option>`
 
     })
     prepareRoles.forEach(role => document.getElementById(parentId).innerHTML += role)
@@ -87,7 +87,7 @@ const openDeleteModal = (user) => {
     const modal = document.getElementById('deleteModal' + user.id);
     if (modal) {
         const inputs = modal.querySelectorAll("input");
-        const select = modal.querySelectorAll("select")[0].setAttribute("disabled", "disabled");
+         modal.querySelectorAll("select")[0].setAttribute("disabled", "disabled");
         [...inputs].map(input => input.setAttribute("disabled", "disabled"))
     }
 
@@ -97,7 +97,7 @@ const openDeleteModal = (user) => {
 const openEditModal = (user) => {
     const td = document.createElement("td");
     td.innerHTML = createModalHelper(user, "edit")();
-    const tr = document.body.appendChild(td)
+    document.body.appendChild(td)
 }
 
 const createModalHelper = (user, mode = "edit") =>  ()=>
@@ -112,6 +112,7 @@ const createModalHelper = (user, mode = "edit") =>  ()=>
                                             </div>
                                             <div class="modal-body d-flex justify-content-center">
                                                 <form method="GET"
+                                                      onsubmit=${updateUser(user)}
                                                       action=${mode === "edit" ? '/admin/edit?id=' + user.id : '/admin/delete?id=' + user.id}
                                                       class="col-6 d-flex flex-column justify-content-center align-content-center">
                                                     <div class="d-flex justify-content-center align-content-center">
@@ -121,6 +122,7 @@ const createModalHelper = (user, mode = "edit") =>  ()=>
                                                                    class="fw-bold align-self-center">ID</label>
                                                             <input type="text" id=${mode === "edit" ? 'idEdit' + user.id : 'idDelete' + user.id}
                                                                    value=${user.id}
+                                                                   disabled
                                                                    class="rounded p-1 border-1  mb-2 p-1" 
                                                                    >
                                                             <label for=${mode === "edit" ? 'firstNameEdit' + user.id : 'firstNameDelete' + user.id}
@@ -137,7 +139,7 @@ const createModalHelper = (user, mode = "edit") =>  ()=>
                                                                    class="rounded p-1 border-1  mb-2 p-1 ">
                                                             <label for=${mode === "edit" ? 'ageEdit' + user.id : 'ageDelete' + user.id}
                                                                    class="fw-bold align-self-center">Age</label>
-                                                            <input type="number" id="'ageDelete' + ${user.id}"
+                                                            <input type="number" id=${mode === "edit" ? 'ageEdit' + user.id : 'ageDelete' + user.id}
                                                                    value=${user.age}
                                                                    class="rounded p-1 border-1  mb-2 p-1">
                                                             <label for=${mode === "edit" ? 'emailEdit' + user.id : 'emailDelete' + user.id}
@@ -163,15 +165,68 @@ const createModalHelper = (user, mode = "edit") =>  ()=>
                                                 </button> 
                                                     ${mode === "edit" ?
         '<button type="submit" class="btn btn-primary">Edit</button>' :
-        '<button type="submit" class="btn btn-danger">Delete</button>'}
+        '<button type="button" class="btn btn-danger">Delete</button>'}
                                            
                                             </div>
                                         </div>
 
 
 `
+const updateUser = async (user) => {
+    console.log(user.id)
+    const form = document.getElementById("userCreateForm");
+    const formData = new FormData(form);
+    const firstName = formData.get('firstName');
+    const lastName = formData.get('lastName');
+    const age = formData.get('age');
+    const email = formData.get('email');
+    const password = formData.get('password');
+    let roles = formData.getAll("roles");
+    const listRole = []
+    roles.map(role => {
+        listRole.push({id: role})
+    })
 
+    await fetch(adminUsersUrl, {
+        method:"PATCH",
+        body: JSON.stringify({firstName, lastName, age,email, password,roles:listRole}),
+        headers: {
+            'content-type': 'application/json'
+        },
+    })
+    document.getElementById("tableUsersData").innerText = "";
+    document.getElementById("allUsersNavItem").innerText = "";
+    document.getElementById("adminPanel-tab").click()
+    await getUsersData();
+}
 
+const createNewUser = async () => {
+
+    const form = document.getElementById("userCreateForm");
+    const formData = new FormData(form);
+    const firstName = formData.get('firstName');
+    const lastName = formData.get('lastName');
+    const age = formData.get('age');
+    const email = formData.get('email');
+    const password = formData.get('password');
+    let roles = formData.getAll("roles");
+    const listRole = []
+    roles.map(role => {
+         listRole.push({id: role})
+    })
+
+    await fetch(adminUsersUrl, {
+        method:"POST",
+        body: JSON.stringify({firstName, lastName, age,email, password,roles:listRole}),
+        headers: {
+            'content-type': 'application/json'
+        },
+    })
+    document.getElementById("tableUsersData").innerText = "";
+    document.getElementById("allUsersNavItem").innerText = "";
+    document.getElementById("adminPanel-tab").click()
+    await getUsersData();
+}
 
 const createUserFormHelper = () => {
     const form = document.getElementById("userCreateForm");
@@ -204,7 +259,7 @@ const createUserFormHelper = () => {
                                 ${allRolesListHelper("roles")}
                             </select>
 
-                            <button type="submit" th:value="Add"
+                            <button type="button" th:value="Add" onclick="createNewUser()"
                                     class="fs-5 border-0 bg-success text-white w-50 align-self-center rounded p-2">Add
                                 new user
                             </button>`

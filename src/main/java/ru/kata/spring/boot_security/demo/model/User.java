@@ -1,13 +1,13 @@
 package ru.kata.spring.boot_security.demo.model;
 
-
+import org.hibernate.annotations.Cascade;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
@@ -34,19 +34,19 @@ public class User implements UserDetails {
     private String password;
 
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
 
-    private Set<Role> roles;
+    private List<Role> roles;
 
     public User() {
 
     }
 
-    public User(String firstName, String lastName, byte age, String username, String password, Set<Role> roles) {
+    public User(String firstName, String lastName, byte age, String username, String password, List<Role> roles) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
@@ -139,11 +139,11 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public Set<Role> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
 

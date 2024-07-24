@@ -8,6 +8,7 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.service.UserServiceImp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -23,13 +24,21 @@ public class DataInitializer {
             adminRole.setName("ROLE_ADMIN");
             roleRepository.save(adminRole);
 
+            List<Role> adminRoles = new ArrayList<>();
+            adminRoles.add(userRole);
+            adminRoles.add(adminRole);
+
+            List<Role> userRoles = new ArrayList<>();
+            userRoles.add(userRole);
+
             User user = new User();
             user.setFirstName("user");
             user.setLastName("user");
             user.setAge((byte) 100);
             user.setEmail("user@mail.ru");
             user.setPassword("123");
-            userServiceImp.add(user, List.of(userRole.getId()));
+            user.setRoles(userRoles);
+            userServiceImp.add(user);
 
             User admin = new User();
             admin.setFirstName("admin");
@@ -37,7 +46,8 @@ public class DataInitializer {
             admin.setAge((byte) 50);
             admin.setEmail("admin@mail.ru");
             admin.setPassword("123");
-            userServiceImp.add(admin, List.of(adminRole.getId(), userRole.getId()));
+            admin.setRoles(adminRoles);
+            userServiceImp.add(admin);
         };
     }
 }

@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -18,6 +19,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -62,8 +64,9 @@ public class UserController {
     }
 
 
-    @PostMapping("/admin")
+    @PostMapping("/admin/api/users")
     public ResponseEntity<HttpStatus> createUser(@RequestBody @Valid User user, BindingResult bindingResult, @RequestParam(name = "roles", required = false) Long[] selectedRoles) {
+        System.out.println(user);
         if(bindingResult.hasErrors()) {
             StringBuilder sb = new StringBuilder();
           List<FieldError> listError = bindingResult.getFieldErrors();
@@ -73,9 +76,7 @@ public class UserController {
             throw new PersonNotCreatedException(sb.toString());
         }
 
-        if (selectedRoles != null && selectedRoles.length > 0) {
-            userService.add(user, Arrays.asList(selectedRoles));
-        }
+        userService.add(user);
         return new  ResponseEntity<>(HttpStatus.CREATED);
     }
 
