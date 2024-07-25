@@ -57,10 +57,10 @@ public class UserController {
     }
 
     @GetMapping("/admin/api/user/{id}")
-    public ResponseEntity<User> getUser(@PathVariable long id) {
+    public ResponseEntity<User> getUser(@PathVariable("id") Long id) {
 
-        User user = userService.showUser(id);
-        return new ResponseEntity<>(user,  HttpStatus.OK);
+            return new ResponseEntity<>(userService.showUser(id),  HttpStatus.OK);
+
     }
 
 
@@ -81,19 +81,19 @@ public class UserController {
     }
 
 
-    @PatchMapping("/admin/{id}")
+    @PatchMapping("/admin/api/{id}")
     public ResponseEntity<HttpStatus> updateUser(@RequestBody @Valid User user, BindingResult bindingResult, @RequestParam(name = "roles", required = false) Long[] selectedRoles) {
         if(bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        if (selectedRoles != null && selectedRoles.length > 0) {
-            userService.updateUser(user, Arrays.asList(selectedRoles));
-        }
+
+        userService.updateUser(user);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/admin/delete")
+    @DeleteMapping("/admin/api/users")
     public ResponseEntity<HttpStatus> deletedUser(@RequestParam(value = "id") long id) {
         System.out.println(id);
         userService.deleteUser(id);

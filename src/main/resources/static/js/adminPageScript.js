@@ -1,5 +1,6 @@
 const adminUsersUrl = '/admin/api/users';
 const adminRolesUrl = '/admin/api/roles';
+const adminGetUser = '/admin/api/user';
 
 const getUsersData = async () => {
     const response = await fetch(adminUsersUrl);
@@ -46,9 +47,20 @@ const allRolesListHelper = async (parentId = "", user = null, deleteMode = false
 
 const createTableUsersData = (allUsers) => {
     const tableUsersData = document.getElementById("tableUsersData");
-
+    tableUsersData.innerHTML = `
+     <tr class="border-top lh-lg">
+                                <th class="ps-3">Id</th>
+                                <th>First name</th>
+                                <th>Last Name</th>
+                                <th>Age</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>`
     allUsers.forEach((user, index) => {
-        return tableUsersData.innerHTML += `<tr id="tr"
+        return tableUsersData.innerHTML += `
+<tr id="tr"
                                 class=${index % 2 === 1 ? 'bg-light border-top lh-lg' : 'bg-white border-top lh-lg'}>
                                 <td class="ps-3 lh-lg pb-3 pt-3">${user.id}</td>
                                 <td>${user.firstName}</td>
@@ -80,7 +92,7 @@ const createTableUsersData = (allUsers) => {
     })
 }
 
-const openDeleteModal = (user) => {
+const openDeleteModal = user => {
     const td = document.createElement("td");
     td.innerHTML = createModalHelper(user, "delete")();
     document.body.appendChild(td)
@@ -90,11 +102,9 @@ const openDeleteModal = (user) => {
          modal.querySelectorAll("select")[0].setAttribute("disabled", "disabled");
         [...inputs].map(input => input.setAttribute("disabled", "disabled"))
     }
-
-
 }
 
-const openEditModal = (user) => {
+const openEditModal = user => {
     const td = document.createElement("td");
     td.innerHTML = createModalHelper(user, "edit")();
     document.body.appendChild(td)
@@ -107,12 +117,12 @@ const createModalHelper = (user, mode = "edit") =>  ()=>
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="deleteModalLabel">${mode === "edit" ? 'Edit user' : 'Delete user'}</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" id="close"
                                                         aria-label="Закрыть"></button>
                                             </div>
                                             <div class="modal-body d-flex justify-content-center">
-                                                <form method="GET"
-                                                      onsubmit=${updateUser(user)}
+                                                <form  
+                                                      id=${mode + user.id}  
                                                       action=${mode === "edit" ? '/admin/edit?id=' + user.id : '/admin/delete?id=' + user.id}
                                                       class="col-6 d-flex flex-column justify-content-center align-content-center">
                                                     <div class="d-flex justify-content-center align-content-center">
@@ -130,27 +140,38 @@ const createModalHelper = (user, mode = "edit") =>  ()=>
                                                             <input type="text"
                                                                    id=${mode === "edit" ? 'firstNameEdit' + user.id : 'firstNameDelete' + user.id}
                                                                    value=${user.firstName}
+                                                                   name="firstName"
                                                                    class="rounded p-1 border-1  mb-2 p-1">
                                                             <label for=${mode === "edit" ? 'lastNameEdit' + user.id : 'lastNameDelete' + user.id}
                                                                    class="fw-bold align-self-center">Last name</label>
                                                             <input type="text"
                                                                    id=${mode === "edit" ? 'lastNameEdit' + user.id : 'lastNameDelete' + user.id}
                                                                    value=${user.lastName}
+                                                                    name="lastName"
                                                                    class="rounded p-1 border-1  mb-2 p-1 ">
                                                             <label for=${mode === "edit" ? 'ageEdit' + user.id : 'ageDelete' + user.id}
                                                                    class="fw-bold align-self-center">Age</label>
                                                             <input type="number" id=${mode === "edit" ? 'ageEdit' + user.id : 'ageDelete' + user.id}
                                                                    value=${user.age}
+                                                                   name="age"
                                                                    class="rounded p-1 border-1  mb-2 p-1">
                                                             <label for=${mode === "edit" ? 'emailEdit' + user.id : 'emailDelete' + user.id}
                                                                    class="fw-bold align-self-center">Email</label>
                                                             <input type="email" id=${mode === "edit" ? 'emailEdit' + user.id : 'emailDelete' + user.id}
                                                                    value=${user.email}
+                                                                   name="email"
+                                                                   class="rounded p-1 border-1  mb-2 p-1">
+                                                                   <label for=${mode === "edit" ? 'passwordEdit' + user.id : 'passwordDelete' + user.id}
+                                                                   class="fw-bold align-self-center">Password</label>
+                                                            <input type="password" id=${mode === "edit" ? 'passwordEdit' + user.id : 'passwordDelete' + user.id}
+                                                                   value=${user.password}
+                                                                   name="password"
                                                                    class="rounded p-1 border-1  mb-2 p-1">
                                                             <label for=${mode === "edit" ? 'roleEdit' + user.id : 'roleDelete' + user.id}
                                                                    class="fw-bold align-self-center">Role</label>
                                                             <select name="roles" id=${mode === "edit" ? 'roleEdit' + user.id : 'roleDelete' + user.id}
                                                                     multiple
+                                                                  
                                                                     class="mb-2 ps-2" size="2">
                                                                 ${mode === "edit" ? allRolesListHelper(mode === "edit" ? 'roleEdit' + user.id : 'roleDelete' + user.id, user) : allRolesListHelper('roleDelete' + user.id, user, true)}
                                                             </select>
@@ -160,21 +181,39 @@ const createModalHelper = (user, mode = "edit") =>  ()=>
                                                 </form>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id=${'closeButton' + mode}>
                                                     Close
                                                 </button> 
                                                     ${mode === "edit" ?
-        '<button type="submit" class="btn btn-primary">Edit</button>' :
-        '<button type="button" class="btn btn-danger">Delete</button>'}
+        `<button type="submit" class="btn btn-primary"  onClick="updateUser()" data-value=${user.id} id="editBtn">Edit</button>` :
+        `<button type="submit" class="btn btn-danger" onClick="deleteUser()" id="deleteBtn" data-value=${user.id}>Delete</button>`}
                                            
                                             </div>
-                                        </div>
+                                        </div>`
+
+const deleteUser = async () =>  {
+
+    const id = document.getElementById("deleteBtn").dataset["value"];
+    document.getElementById("tableUsersData").innerText = "";
+    document.getElementById("allUsersNavItem").innerText = "";
+    document.getElementById(`closeButton` + "delete").click();
+    await fetch(adminUsersUrl + "?id=" + id, {
+        method:"DELETE",
+        headers: {
+            'content-type': 'application/json'
+        },
+    })
 
 
-`
-const updateUser = async (user) => {
-    console.log(user.id)
-    const form = document.getElementById("userCreateForm");
+    await getUsersData();
+
+}
+
+async function  updateUser  ()    {
+
+    const id = document.getElementById("editBtn").dataset["value"];
+    const form = document.getElementById(`edit${id}`);
+
     const formData = new FormData(form);
     const firstName = formData.get('firstName');
     const lastName = formData.get('lastName');
@@ -189,15 +228,16 @@ const updateUser = async (user) => {
 
     await fetch(adminUsersUrl, {
         method:"PATCH",
-        body: JSON.stringify({firstName, lastName, age,email, password,roles:listRole}),
+        body: JSON.stringify({id, firstName, lastName, age,email, password,roles:listRole}),
         headers: {
             'content-type': 'application/json'
         },
     })
     document.getElementById("tableUsersData").innerText = "";
     document.getElementById("allUsersNavItem").innerText = "";
-    document.getElementById("adminPanel-tab").click()
+    document.getElementById(`closeButtonedit` ).click();
     await getUsersData();
+
 }
 
 const createNewUser = async () => {
@@ -224,7 +264,7 @@ const createNewUser = async () => {
     })
     document.getElementById("tableUsersData").innerText = "";
     document.getElementById("allUsersNavItem").innerText = "";
-    document.getElementById("adminPanel-tab").click()
+    document.getElementById("adminPanel-tab").click();
     await getUsersData();
 }
 
