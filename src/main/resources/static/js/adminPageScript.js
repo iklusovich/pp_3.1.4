@@ -8,6 +8,8 @@ const getUsersData = async () => {
     await getCurrentUserInfo(currentUser);
     await createTableUsersData(allUsers);
     getAllUsersInfo(allUsers, currentUser);
+   // document.querySelectorAll("#divModal").forEach(elem => document.body.removeChild(elem));
+   // document.querySelectorAll("#tdModal").forEach(elem => document.body.removeChild(elem));
 }
 
 const getRolesData = async () => {
@@ -119,21 +121,21 @@ const openDeleteModal = async (id) => {
 const openEditModal = async (id) => {
     const response = await fetch(adminGetUser +"/" + id)
     const user = await response.json();
-    const div = document.createElement("div");
-    div.id = "divModal";
-    div.innerHTML = createModalHelper(user, "edit");
-    document.body.append(div);
+    const td = document.createElement("td");
+    td.id = "tdModal";
+    td.innerHTML = createModalHelper(user, "edit");
+    document.body.append(td);
     await allRolesListHelper("roleEdit" + user.id, user);
 }
 
 const createModalHelper =   (user, mode = "edit") =>
 
       `<div class="modal fade" id=${mode === "edit" ? 'editModal' + user.id : 'deleteModal' + user.id} tabindex="-1"
-                                     aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                     aria-labelledby=${mode === "edit" ? 'editModalLabel' : 'deleteModalLabel'} aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="deleteModalLabel">${mode === "edit" ? 'Edit user' : 'Delete user'}</h5>
+                                                <h5 class="modal-title" id=${mode === "edit" ? 'editModalLabel' : 'deleteModalLabel'}>${mode === "edit" ? 'Edit user' : 'Delete user'}</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" id="close"
                                                         aria-label="Закрыть"></button>
                                             </div>
@@ -201,19 +203,20 @@ const createModalHelper =   (user, mode = "edit") =>
                                                     Close
                                                 </button> 
                                                     ${mode === "edit" ?
-        `<button type="submit" class="btn btn-primary"  onClick="updateUser()" data-value=${user.id} id="editBtn">Edit</button>` :
-        `<button type="submit" class="btn btn-danger" onClick="deleteUser()" id="deleteBtn" data-value=${user.id}>Delete</button>`}
+        `<button type="submit" class="btn btn-primary"  onClick="updateUser(${user.id})" data-value=${user.id}>Edit</button>` :
+        `<button type="submit" class="btn btn-danger" onClick="deleteUser(${user.id})"  data-value=${user.id}>Delete</button>`}
                                            
                                             </div>
                                         </div>`
 
 
 
-const deleteUser = async () =>  {
+const deleteUser = async (id) =>  {
 
-    const id = document.getElementById("deleteBtn").dataset["value"];
+
     document.getElementById("tableUsersData").innerText = "";
     document.getElementById("allUsersNavItem").innerText = "";
+    document.getElementById("currentUserEmail").innerText = "";
     document.getElementById(`closeButton` + "delete" + id).click();
     await fetch(adminUsersUrl + "?id=" + id, {
         method:"DELETE",
@@ -227,35 +230,37 @@ const deleteUser = async () =>  {
 
 }
 
-const   updateUser = async () =>    {
+const  updateUser = async (id) =>    {
 
-    const id = document.getElementById("editBtn").dataset["value"];
     const form = document.getElementById(`edit${id}`);
-
     const formData = new FormData(form);
     const firstName = formData.get('firstName');
     const lastName = formData.get('lastName');
+    const password = formData.get('password');
     const age = formData.get('age');
     const email = formData.get('email');
-    const password = formData.get('password');
+
     let roles = formData.getAll("roles");
     const listRole = []
     roles.map(role => {
         listRole.push({id: role})
     })
+    document.getElementById("tableUsersData").innerHTML = "";
+    document.getElementById("allUsersNavItem").innerHTML = "";
+    document.getElementById("currentUserEmail").innerText = "";
 
-    await fetch(adminUsersUrl, {
+    document.getElementById(`closeButtonedit` + id).click();
+    await fetch(adminUsersUrl +"?id=" + id, {
         method:"PATCH",
-        body: JSON.stringify({id, firstName, lastName, age,email, password,roles:listRole}),
+        body: JSON.stringify({firstName, lastName, age,email, password,roles:listRole}),
         headers: {
             'content-type': 'application/json'
         },
     })
-    document.getElementById("tableUsersData").innerHTML = "";
-    document.getElementById("allUsersNavItem").innerHTML = "";
-    document.getElementById("tdModal").innerHTML = "";
-    document.getElementById("divModal").innerHTML = "";
-    document.getElementById(`closeButtonedit` + id).click();
+
+
+
+
     await getUsersData();
 
 }
@@ -284,8 +289,8 @@ const createNewUser = async () => {
     })
     document.getElementById("tableUsersData").innerHTML = "";
     document.getElementById("allUsersNavItem").innerHTML = "";
-    document.getElementById("tdModal").innerHTML = "";
-    document.getElementById("divModal").innerHTML = "";
+    document.querySelectorAll("#divModal").forEach(elem => document.body.removeChild(elem));
+    document.querySelectorAll("#tdModal").forEach(elem => document.body.removeChild(elem));
     document.getElementById("adminPanel-tab").click();
 
 
@@ -329,7 +334,7 @@ const createUserFormHelper = async () => {
                                 new user
                             </button>`
     await  allRolesListHelper("roles");
-    document.getElementById("tdModal").innerHTML = "";
-    document.getElementById("divModal").innerHTML = "";
+    document.querySelectorAll("#divModal").forEach(elem => document.body.removeChild(elem));
+    document.querySelectorAll("#tdModal").forEach(elem => document.body.removeChild(elem));
 }
 getUsersData();

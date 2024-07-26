@@ -87,13 +87,13 @@ public class UserController {
     }
 
 
-    @PatchMapping("/admin/api/{id}")
-    public ResponseEntity<HttpStatus> updateUser(@RequestBody @Valid User user, BindingResult bindingResult, @RequestParam(name = "roles", required = false) Long[] selectedRoles) {
+    @PatchMapping("/admin/api/users")
+    public ResponseEntity<HttpStatus> updateUser(@RequestBody @Valid User user, BindingResult bindingResult, @RequestParam(value = "id", required = false) long id) {
         if(bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-
+        user.setId(id);
         userService.updateUser(user);
 
         return new ResponseEntity<>(HttpStatus.OK);
