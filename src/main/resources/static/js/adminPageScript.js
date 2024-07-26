@@ -31,17 +31,21 @@ const getAllUsersInfo = async (allUsers, currentUser) => {
 }
 
 const allRolesListHelper = async (parentId = "", user = null, deleteMode = false) => {
+    document.getElementById(parentId).innerHTML = "";
+
     let allRoles = await getRolesData();
+
     const prepareRoles = allRoles.map(role => {
         let isSelected = false;
         if (user) {
             isSelected = user.roles.map(elem => elem.name).includes(role.name) && !deleteMode;
         }
+
         return isSelected ? `<option selected value=${role.id}><span>${role.name.replace("ROLE_", "")} </span></option>`
             : `<option value=${role.id}><span>${role.name.replace("ROLE_", "")} </span></option>`
 
     })
-    prepareRoles.forEach(role => document.getElementById(parentId).innerHTML += role)
+    prepareRoles.map(role => document.getElementById(parentId).innerHTML += role)
 }
 
 
@@ -59,6 +63,7 @@ const createTableUsersData = (allUsers) => {
                                 <th>Delete</th>
                             </tr>`
     allUsers.forEach((user, index) => {
+
         return tableUsersData.innerHTML += `
 <tr id="tr"
                                 class=${index % 2 === 1 ? 'bg-light border-top lh-lg' : 'bg-white border-top lh-lg'}>
@@ -73,7 +78,7 @@ const createTableUsersData = (allUsers) => {
                                     <button 
                                     class="bg-info text-white border-0 rounded" 
                                     type="submit"
-                                    onclick=${openEditModal(user)}
+                                    onClick=${openEditModal(user.id)}
                                     data-bs-toggle="modal" 
                                     data-bs-target=${'#editModal' + user.id}>
                                         Edit
@@ -82,36 +87,46 @@ const createTableUsersData = (allUsers) => {
                                 <td>
                                     <button class="bg-danger text-white border-0 rounded"
                                      type="submit"
-                                     onclick=${openDeleteModal(user)}
+                                     onclick=${openDeleteModal(user.id)}
                                      data-bs-toggle="modal"
                                      data-bs-target=${'#deleteModal' + user.id}>
                                         Delete
                                      </button>
                                 </td>
                             </tr>`
+
     })
+
 }
 
-const openDeleteModal = user => {
+const openDeleteModal = async (id) => {
     const td = document.createElement("td");
-    td.innerHTML = createModalHelper(user, "delete")();
-    document.body.appendChild(td)
+    const response = await fetch(adminGetUser +"/" + id)
+    const user = await response.json();
     const modal = document.getElementById('deleteModal' + user.id);
     if (modal) {
         const inputs = modal.querySelectorAll("input");
          modal.querySelectorAll("select")[0].setAttribute("disabled", "disabled");
         [...inputs].map(input => input.setAttribute("disabled", "disabled"))
     }
+    td.innerHTML =   createModalHelper(user, "delete");
+    document.body.appendChild(td);
+
+    await allRolesListHelper("roleDelete" + user.id, user)
 }
 
-const openEditModal = user => {
-    const td = document.createElement("td");
-    td.innerHTML = createModalHelper(user, "edit")();
-    document.body.appendChild(td)
+const openEditModal = async (id) => {
+    const response = await fetch(adminGetUser +"/" + id)
+    const user = await response.json();
+    const div = document.createElement("div");
+    div.innerHTML = createModalHelper(user, "edit");
+    document.body.append(div);
+    await allRolesListHelper("roleEdit" + user.id, user);
 }
 
-const createModalHelper = (user, mode = "edit") =>  ()=>
-     `<div class="modal fade" id=${mode === "edit" ? 'editModal' + user.id : 'deleteModal' + user.id} tabindex="-1"
+const createModalHelper =   (user, mode = "edit") =>
+
+      `<div class="modal fade" id=${mode === "edit" ? 'editModal' + user.id : 'deleteModal' + user.id} tabindex="-1"
                                      aria-labelledby="deleteModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -173,7 +188,6 @@ const createModalHelper = (user, mode = "edit") =>  ()=>
                                                                     multiple
                                                                   
                                                                     class="mb-2 ps-2" size="2">
-                                                                ${mode === "edit" ? allRolesListHelper(mode === "edit" ? 'roleEdit' + user.id : 'roleDelete' + user.id, user) : allRolesListHelper('roleDelete' + user.id, user, true)}
                                                             </select>
 
                                                         </div>
@@ -190,6 +204,8 @@ const createModalHelper = (user, mode = "edit") =>  ()=>
                                            
                                             </div>
                                         </div>`
+
+
 
 const deleteUser = async () =>  {
 
@@ -268,7 +284,8 @@ const createNewUser = async () => {
     await getUsersData();
 }
 
-const createUserFormHelper = () => {
+const createUserFormHelper = async () => {
+
     const form = document.getElementById("userCreateForm");
 
     form.innerHTML = `
@@ -296,12 +313,13 @@ const createUserFormHelper = () => {
                                    class="rounded p-1 border-1  mb-2 p-1">
                             <label for="roles" class="fw-bold align-self-center">Role</label>
                             <select name="roles" id="roles" multiple class="mb-2 ps-2" size="2">
-                                ${allRolesListHelper("roles")}
+                                
                             </select>
 
                             <button type="button" th:value="Add" onclick="createNewUser()"
                                     class="fs-5 border-0 bg-success text-white w-50 align-self-center rounded p-2">Add
                                 new user
                             </button>`
+    await  allRolesListHelper("roles");
 }
 getUsersData();
