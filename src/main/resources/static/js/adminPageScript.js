@@ -7,7 +7,7 @@ const getUsersData = async () => {
     const {currentUser, allUsers} = await response.json();
     await getCurrentUserInfo(currentUser);
     await createTableUsersData(allUsers);
-    await getAllUsersInfo(allUsers, currentUser);
+    getAllUsersInfo(allUsers, currentUser);
 }
 
 const getRolesData = async () => {
@@ -20,13 +20,13 @@ const getCurrentUserInfo = (currentUser) => {
     document.getElementById("currentUserRoles").innerText = currentUser.roles.map(role => role.name.replace("ROLE_", "")).join(" ");
 }
 
-const getAllUsersInfo = async (allUsers, currentUser) => {
+const getAllUsersInfo =  (allUsers, currentUser) => {
     allUsers.forEach(user => {
         document.getElementById("allUsersNavItem").innerHTML += currentUser.id === user.id ? `
             <li class="nav-item mb-0" >
-<a class="nav-link active" aria-current="page" href="@{/admin(id=${user.id})}"> ${user.firstName} <a/><li>` :
+<a class="nav-link active" aria-current="page"  href=/admin/users?id=${user.id}> ${user.firstName} <a/><li>` :
             `<li class="nav-item mb-0" ><a class="nav-link"
-                   aria-current="page" href="@{/admin(id=${user.id})}">${user.firstName}</a></li>`
+                   aria-current="page" href=/admin/users?id=${user.id}>${user.firstName}</a></li>`
     })
 }
 
@@ -101,6 +101,7 @@ const createTableUsersData = (allUsers) => {
 
 const openDeleteModal = async (id) => {
     const td = document.createElement("td");
+    td.id = "tdModal";
     const response = await fetch(adminGetUser +"/" + id)
     const user = await response.json();
     const modal = document.getElementById('deleteModal' + user.id);
@@ -119,6 +120,7 @@ const openEditModal = async (id) => {
     const response = await fetch(adminGetUser +"/" + id)
     const user = await response.json();
     const div = document.createElement("div");
+    div.id = "divModal";
     div.innerHTML = createModalHelper(user, "edit");
     document.body.append(div);
     await allRolesListHelper("roleEdit" + user.id, user);
@@ -179,7 +181,7 @@ const createModalHelper =   (user, mode = "edit") =>
                                                                    <label for=${mode === "edit" ? 'passwordEdit' + user.id : 'passwordDelete' + user.id}
                                                                    class="fw-bold align-self-center">Password</label>
                                                             <input type="password" id=${mode === "edit" ? 'passwordEdit' + user.id : 'passwordDelete' + user.id}
-                                                                   value=${user.password}
+                                                                  
                                                                    name="password"
                                                                    class="rounded p-1 border-1  mb-2 p-1">
                                                             <label for=${mode === "edit" ? 'roleEdit' + user.id : 'roleDelete' + user.id}
@@ -195,7 +197,7 @@ const createModalHelper =   (user, mode = "edit") =>
                                                 </form>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id=${'closeButton' + mode}>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id=${'closeButton' + mode + user.id}>
                                                     Close
                                                 </button> 
                                                     ${mode === "edit" ?
@@ -212,7 +214,7 @@ const deleteUser = async () =>  {
     const id = document.getElementById("deleteBtn").dataset["value"];
     document.getElementById("tableUsersData").innerText = "";
     document.getElementById("allUsersNavItem").innerText = "";
-    document.getElementById(`closeButton` + "delete").click();
+    document.getElementById(`closeButton` + "delete" + id).click();
     await fetch(adminUsersUrl + "?id=" + id, {
         method:"DELETE",
         headers: {
@@ -225,7 +227,7 @@ const deleteUser = async () =>  {
 
 }
 
-async function  updateUser  ()    {
+const   updateUser = async () =>    {
 
     const id = document.getElementById("editBtn").dataset["value"];
     const form = document.getElementById(`edit${id}`);
@@ -249,9 +251,11 @@ async function  updateUser  ()    {
             'content-type': 'application/json'
         },
     })
-    document.getElementById("tableUsersData").innerText = "";
-    document.getElementById("allUsersNavItem").innerText = "";
-    document.getElementById(`closeButtonedit` ).click();
+    document.getElementById("tableUsersData").innerHTML = "";
+    document.getElementById("allUsersNavItem").innerHTML = "";
+    document.getElementById("tdModal").innerHTML = "";
+    document.getElementById("divModal").innerHTML = "";
+    document.getElementById(`closeButtonedit` + id).click();
     await getUsersData();
 
 }
@@ -278,9 +282,13 @@ const createNewUser = async () => {
             'content-type': 'application/json'
         },
     })
-    document.getElementById("tableUsersData").innerText = "";
-    document.getElementById("allUsersNavItem").innerText = "";
+    document.getElementById("tableUsersData").innerHTML = "";
+    document.getElementById("allUsersNavItem").innerHTML = "";
+    document.getElementById("tdModal").innerHTML = "";
+    document.getElementById("divModal").innerHTML = "";
     document.getElementById("adminPanel-tab").click();
+
+
     await getUsersData();
 }
 
@@ -321,5 +329,7 @@ const createUserFormHelper = async () => {
                                 new user
                             </button>`
     await  allRolesListHelper("roles");
+    document.getElementById("tdModal").innerHTML = "";
+    document.getElementById("divModal").innerHTML = "";
 }
 getUsersData();

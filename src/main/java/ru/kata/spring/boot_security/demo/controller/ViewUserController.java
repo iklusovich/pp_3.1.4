@@ -11,4 +11,12 @@ public class ViewUserController {
         return "admin";
     }
 
+    @GetMapping("/admin/users")
+    public String renderUserPage() {
+        return "userPage";
+    }
+    @GetMapping("/user")
+    public String renderCurrentUserPage() {
+        return "currentUserPage";
+    }
 }

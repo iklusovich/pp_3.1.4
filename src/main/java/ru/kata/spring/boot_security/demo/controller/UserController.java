@@ -33,11 +33,13 @@ public class UserController {
         this.roleService = roleService;
     }
 
-    @GetMapping("/user")
-    public String showUser(Model model, Principal principal) {
-        User user = userService.findByUsername(principal.getName());
-        model.addAttribute("showUser", userService.showUser(user.getId()));
-        return "userPage";
+    @GetMapping("/user/api")
+    public ResponseEntity<GetUsersResponse> getCurrentUser(Principal principal) {
+        GetUsersResponse response = new GetUsersResponse();
+        User currentUser = userService.findByUsername(principal.getName());
+        response.setAllUsers(userService.getAll());
+        response.setCurrentUser(currentUser);
+        return new ResponseEntity<>(response,  HttpStatus.OK);
     }
 
     @GetMapping("/admin/api/users")
@@ -47,7 +49,11 @@ public class UserController {
         response.setAllUsers(userService.getAll());
         response.setCurrentUser(currentUser);
         response.setAllRoles(roleService.findAll());
-        response.setUser(userService.showUser(currentUser.getId()));
+
+        if (id != null) {
+            response.setShowUser(userService.showUser(id));
+        }
+
         return new ResponseEntity<>(response,  HttpStatus.OK);
     }
 
