@@ -160,20 +160,26 @@ const createModalHelper =   (user, mode = "edit") =>
                                                                    id=${mode === "edit" ? 'firstNameEdit' + user.id : 'firstNameDelete' + user.id}
                                                                    value=${user.firstName}
                                                                    name="firstName"
-                                                                   class="rounded p-1 border-1  mb-2 p-1">
+                                                                   class="rounded p-1 border-1  mb-2 p-1"
+                                                                  
+                                                                   >
                                                             <label for=${mode === "edit" ? 'lastNameEdit' + user.id : 'lastNameDelete' + user.id}
                                                                    class="fw-bold align-self-center">Last name</label>
                                                             <input type="text"
                                                                    id=${mode === "edit" ? 'lastNameEdit' + user.id : 'lastNameDelete' + user.id}
                                                                    value=${user.lastName}
                                                                     name="lastName"
-                                                                   class="rounded p-1 border-1  mb-2 p-1 ">
+                                                                   class="rounded p-1 border-1  mb-2 p-1"
+                                                                   
+                                                                   >
                                                             <label for=${mode === "edit" ? 'ageEdit' + user.id : 'ageDelete' + user.id}
                                                                    class="fw-bold align-self-center">Age</label>
                                                             <input type="number" id=${mode === "edit" ? 'ageEdit' + user.id : 'ageDelete' + user.id}
                                                                    value=${user.age}
                                                                    name="age"
-                                                                   class="rounded p-1 border-1  mb-2 p-1">
+                                                                   class="rounded p-1 border-1  mb-2 p-1"
+                                                                 
+                                                                   >
                                                             <label for=${mode === "edit" ? 'emailEdit' + user.id : 'emailDelete' + user.id}
                                                                    class="fw-bold align-self-center">Email</label>
                                                             <input type="email" id=${mode === "edit" ? 'emailEdit' + user.id : 'emailDelete' + user.id}
@@ -257,10 +263,6 @@ const  updateUser = async (id) =>    {
             'content-type': 'application/json'
         },
     })
-
-
-
-
     await getUsersData();
 
 }

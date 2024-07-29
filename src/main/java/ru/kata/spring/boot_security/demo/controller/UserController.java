@@ -1,12 +1,10 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.ui.Model;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
@@ -15,11 +13,8 @@ import ru.kata.spring.boot_security.demo.util.GetUsersResponse;
 import ru.kata.spring.boot_security.demo.util.PersonErrorResponse;
 import ru.kata.spring.boot_security.demo.util.PersonNotCreatedException;
 
-import javax.validation.Valid;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -71,31 +66,16 @@ public class UserController {
 
 
     @PostMapping("/admin/api/users")
-    public ResponseEntity<HttpStatus> createUser(@RequestBody @Valid User user, BindingResult bindingResult, @RequestParam(name = "roles", required = false) Long[] selectedRoles) {
-        System.out.println(user);
-        if(bindingResult.hasErrors()) {
-            StringBuilder sb = new StringBuilder();
-          List<FieldError> listError = bindingResult.getFieldErrors();
-          for (FieldError error : listError) {
-              sb.append(error.getField()).append(" : ").append(error.getDefaultMessage()).append("\n");
-          }
-            throw new PersonNotCreatedException(sb.toString());
-        }
-
+    public ResponseEntity<HttpStatus> createUser(@RequestBody User user) {
         userService.add(user);
         return new  ResponseEntity<>(HttpStatus.CREATED);
     }
 
 
     @PatchMapping("/admin/api/users")
-    public ResponseEntity<HttpStatus> updateUser(@RequestBody @Valid User user, BindingResult bindingResult, @RequestParam(value = "id", required = false) long id) {
-        if(bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<HttpStatus> updateUser(@RequestBody User user, @RequestParam(value = "id", required = false) long id) {
         user.setId(id);
         userService.updateUser(user);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
